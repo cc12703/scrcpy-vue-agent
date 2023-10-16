@@ -4,7 +4,7 @@
 
 <template>
   <div class="dev-view">
-    <DeviceView wsUrl="ws://localhost:7910/scrcpy"></DeviceView>
+    <device-view wsUrl="ws://localhost:7910/scrcpy"></device-view>
   </div>
 </template>
 
@@ -12,6 +12,6 @@
   .dev-view {
     width: 100%;
     height: 100%;
-    background-color: #000;
+    background-color: gray;
   }
 </style>

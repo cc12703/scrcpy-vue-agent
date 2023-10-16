@@ -27,12 +27,16 @@ const props = defineProps<{
     wsUrl: string
 }>()
 
-const comm = new Communicator(props.wsUrl)
-const player = new Player(container.value!, comm)
+let comm: Communicator
+let player: Player
 
 
 onMounted(() => {
     console.log(`onMounted is call ${props.wsUrl}`)
+
+    comm = new Communicator(props.wsUrl)
+    player = new Player(container.value!, comm)
+
     comm.start()
     
 })

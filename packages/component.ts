@@ -1,10 +1,18 @@
 
 
 
-import DeviceView from "./components/DeviceView";
 
+import { App, Plugin } from 'vue';
 
+import { DeviceViewPlugin } from './components/DeviceView';
 
-export default [DeviceView];
+const ScrcpyPlugin: Plugin = {
+  install(app: App) {
+    DeviceViewPlugin.install?.(app);
+  },
+};
 
-export { DeviceView };
+export default ScrcpyPlugin;
+
+export * from './components/DeviceView';
+

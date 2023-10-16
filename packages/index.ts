@@ -1,22 +1,15 @@
 
 
+import { App, Plugin } from 'vue';
 
-import { App } from 'vue'
+import { DeviceViewPlugin } from './components/DeviceView';
 
-export * from './component'
-import components from './component'
+const ScrcpyPlugin: Plugin = {
+  install(app: App) {
+    DeviceViewPlugin.install?.(app);
+  },
+};
 
+export default ScrcpyPlugin;
 
-
-const install = function (app: App) {
-  components.forEach((component: any) => {
-    app.use(component as unknown as { install: () => any })
-  })
-}
-
-
-
-
-export default {
-    install
-}
+export * from './components/DeviceView';

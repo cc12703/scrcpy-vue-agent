@@ -1,18 +1,20 @@
 
 
 
-import { App } from 'vue'
+import { App, Plugin } from 'vue'
 
 
 import DeviceView from './index.vue'
 
 
-DeviceView.install = (app: App) => {
-  app.component(DeviceView.name, DeviceView)
-  return app
-}
 
 
+export const DeviceViewPlugin: Plugin = {
+  install(app: App) {
+    app.component('device-view', DeviceView);
+  },
+};
+
+export { DeviceView };
 
 
-export default DeviceView

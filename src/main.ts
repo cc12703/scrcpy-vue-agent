@@ -4,9 +4,9 @@ import App from './App.vue'
 
 
 
-import DeviceView from '../packages'
+import Scrcpy from '../packages'
 
-createApp(App).use(DeviceView).mount('#app')
+createApp(App).use(Scrcpy).mount('#app')
 
 
 
