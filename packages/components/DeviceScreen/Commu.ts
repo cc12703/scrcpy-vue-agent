@@ -2,6 +2,8 @@
 
 import Emittery from "emittery";
 
+import { Message } from "./Message";
+
 
 export class Communicator {
 
@@ -18,7 +20,9 @@ export class Communicator {
 
 
     start() {
+        console.log(`ws url: ${this.wsUrl}`)
         this.ws = new WebSocket(this.wsUrl);
+        this.ws.binaryType = "arraybuffer";
         this.ws.onopen = () => {
             console.log("ws opened");
         }
@@ -43,10 +47,13 @@ export class Communicator {
         this.emitter.off(event, fn);
     }
 
+    sendMsg(msg: Message) {
+        this.ws?.send(JSON.stringify(msg.toJSON()))
+    }
 
     private processMessage(event: MessageEvent) {
         if (event.data instanceof ArrayBuffer) {    
-            this.emitter.emit("frame", event.data);
+            this.emitter.emit("frame", new Uint8Array(event.data));
         }
     }
 

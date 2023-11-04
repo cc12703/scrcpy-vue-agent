@@ -25,10 +25,11 @@ export class Player {
     private canvas: HTMLCanvasElement
     private canvasCtx: CanvasRenderingContext2D
     private decoder: VideoDecoder
+    private comm: Communicator
 
     private animationFrameId?: number
 
-    private state: PlayState = PlayState.STOPPED
+    private state: PlayState = PlayState.PLAYING
     private frames: Uint8Array[] = []
     private decodedFrames: DecodedFrame[] = []
     private receivedFirstFrame = false
@@ -43,8 +44,12 @@ export class Player {
         this.canvas = canvas
         this.canvasCtx = canvas.getContext('2d')!!
         this.decoder = this.createDecoder()
+        this.comm = comm
+        
+    }
 
-        comm.on("frame", (frame: Uint8Array) => {
+    public init() {
+        this.comm.on("frame", (frame: Uint8Array) => {
             this.pushFrame(frame)
         })
     }
@@ -78,15 +83,21 @@ export class Player {
         }
         const type = data[4] & 31;
         const isIDR = type === NALU.IDR;
-
         if (type === NALU.SPS) {
             const { codec, width, height } = EncodeUtils.parseSPS(data.subarray(4));
+            console.log(`config player by SPS: ${codec}, ${width}, ${height}`)
+
+            this.canvas.width = width
+            this.canvas.height = height
+
+
             const config: VideoDecoderConfig = {
                 codec,
                 optimizeForLatency: true,
             } as VideoDecoderConfig;
             this.decoder.configure(config);
             this.bufferedSPS = true;
+            
             this.addFrameToBuffer(data);
             this.hadIDR = false;
             return;
@@ -140,7 +151,6 @@ export class Player {
             },
             error: (error: DOMException) => {
                 console.error(error, `code: ${error.code}`);
-                this.stop();
             },
         });
     }
@@ -150,6 +160,10 @@ export class Player {
 
 
     private onFrameDecoded(width: number, height: number, frame: any): void {
+        if (!this.receivedFirstFrame)
+            return;
+        
+
         this.decodedFrames.push({ width, height, frame });
         
 
@@ -159,7 +173,7 @@ export class Player {
     }
 
 
-    private drawDecoded() {
+    drawDecoded = (): void => {
         if (this.receivedFirstFrame) {
             const data = this.decodedFrames.shift();
             if (data) {

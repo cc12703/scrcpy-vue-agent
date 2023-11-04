@@ -2,14 +2,14 @@
 
 import { App, Plugin } from 'vue';
 
-import { DeviceViewPlugin } from './components/DeviceView';
+import { DeviceScreenPlugin } from './components/DeviceScreen';
 
 const ScrcpyPlugin: Plugin = {
   install(app: App) {
-    DeviceViewPlugin.install?.(app);
+    DeviceScreenPlugin.install?.(app);
   },
 };
 
 export default ScrcpyPlugin;
 
-export * from './components/DeviceView';
+export * from './components/DeviceScreen';

@@ -1,11 +1,11 @@
 {
-  "name": "deviceview",
+  "name": "@cc12703m/scrcpy-vue-agent",
   "private": true,
   "version": "1.0.0",
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "vue-tsc && vite build",
+    "build": "vue-tsc --noEmit && vite build",
     "preview": "vite preview"
   },
   "dependencies": {
