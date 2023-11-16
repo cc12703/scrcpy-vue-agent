@@ -1,6 +1,5 @@
 {
   "name": "@cc12703m/scrcpy-vue-agent",
-  "private": true,
   "version": "1.0.0",
   "type": "module",
   "scripts": {
