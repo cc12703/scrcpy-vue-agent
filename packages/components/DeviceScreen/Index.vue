@@ -48,6 +48,10 @@ onMounted(() => {
     player.init()
     toucher.init()
 
+    if (props.isEnable) {
+        comm.start()
+    }
+
     fitCanvas()
 
     
@@ -67,6 +71,7 @@ watch(() => props.isEnable, (newVal) => {
 function fitCanvas() {
     if (canvas.value !== null) {
         canvasStyle.height = canvas.value!!.parentElement?.clientHeight + 'px'
+        canvasStyle.width = 'auto'
     }
 }
 

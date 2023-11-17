@@ -178,7 +178,7 @@ export class Player {
             const data = this.decodedFrames.shift();
             if (data) {
                 const frame: VideoFrame = data.frame;
-                this.canvasCtx.drawImage(frame, 0, 0);
+                this.canvasCtx.drawImage(frame, 0, 0, frame.displayWidth, frame.displayHeight);
                 frame.close();
             }
         }
