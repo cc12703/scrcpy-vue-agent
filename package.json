@@ -1,6 +1,6 @@
 {
   "name": "@cc12703m/scrcpy-vue-agent",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "description": "scrcpy vue component for atx-agent",
   "main": "dist/scrcpy-vue-agent.umd.js",
   "module": "dist/scrcpy-vue-agent.mjs",
