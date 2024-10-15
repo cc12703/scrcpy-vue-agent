@@ -15,20 +15,20 @@ class RectInfo {
 export class Toucher {
 
 
-    private canvas: HTMLCanvasElement
+    private dispView: HTMLElement
     private comm: Communicator
 
     private scrnRect: RectInfo = new RectInfo()
-    private canvasRect: RectInfo = new RectInfo()
+    private dispViewRect: RectInfo = new RectInfo()
 
-    constructor(canvas: HTMLCanvasElement, comm: Communicator) {
-        this.canvas = canvas
+    constructor(dispView: HTMLElement, comm: Communicator) {
+        this.dispView = dispView
         this.comm = comm
     }
 
 
     public init() {
-        this.canvas.addEventListener('mousedown', this.onMouseDown)
+        this.dispView.addEventListener('mousedown', this.onMouseDown)
     }
 
     private onMouseDown = (event: MouseEvent) => {
@@ -38,7 +38,7 @@ export class Toucher {
         this.sendTouchMsg(TOUCH_MSG_OPER_DOWN, event, 0)
 
 
-        this.canvas.addEventListener('mousemove', this.onMouseMove)
+        this.dispView.addEventListener('mousemove', this.onMouseMove)
         document.addEventListener('mouseup', this.onMouseUp)
     }
 
@@ -61,7 +61,7 @@ export class Toucher {
 
         this.sendTouchMsg(TOUCH_MSG_OPER_UP, event, 0)
 
-        this.canvas.removeEventListener('mousemove', this.onMouseMove)
+        this.dispView.removeEventListener('mousemove', this.onMouseMove)
         document.removeEventListener('mouseup', this.onMouseUp)
     }
 
@@ -71,10 +71,10 @@ export class Toucher {
 
 
     private sendTouchMsg(oper: string, event: MouseEvent, pressure: number) {
-        const x = Math.round((event.pageX - this.scrnRect.x) / this.scrnRect.w * this.canvasRect.w)
-        const y = Math.round((event.pageY - this.scrnRect.y) / this.scrnRect.h * this.canvasRect.h)
+        const x = Math.round((event.pageX - this.scrnRect.x) / this.scrnRect.w * this.dispViewRect.w)
+        const y = Math.round((event.pageY - this.scrnRect.y) / this.scrnRect.h * this.dispViewRect.h)
         const msg = new TouchMessage(oper, 0, x, y,
-                    this.canvasRect.w, this.canvasRect.h, pressure)
+                    this.dispViewRect.w, this.dispViewRect.h, pressure)
         this.comm.sendMsg(msg)
     }
 
@@ -82,7 +82,7 @@ export class Toucher {
 
 
     private calcRects(): void {
-        let el: HTMLElement = this.canvas
+        let el: HTMLElement = this.dispView
         this.scrnRect.x = 0
         this.scrnRect.y = 0
         this.scrnRect.w = el.offsetWidth
@@ -94,8 +94,17 @@ export class Toucher {
             el = el.offsetParent as HTMLElement
         }
 
-        this.canvasRect.w = this.canvas.width
-        this.canvasRect.h = this.canvas.height
+
+
+        if (this.dispView instanceof HTMLCanvasElement) {
+            this.dispViewRect.w = this.dispView.width
+            this.dispViewRect.h = this.dispView.height
+        }
+        else if (this.dispView instanceof HTMLVideoElement) {
+            this.dispViewRect.w = this.dispView.videoWidth
+            this.dispViewRect.h = this.dispView.videoHeight
+        }
+
     }
 
 }

@@ -3,7 +3,8 @@
 
 <template>
     <div class="screen_root">
-        <canvas ref="canvas" :style="canvasStyle" />
+        <canvas v-if="props.way == 'webc'" ref="dispView" :style="dispViewStyle" />
+        <video v-else-if="props.way == 'mse'" ref="dispView" :style="dispViewStyle" />
     </div>
 
 </template>
@@ -14,13 +15,15 @@
 import { onMounted, ref, reactive, watch } from 'vue';
 
 import { Communicator } from './Commu'
-import { Player } from './Player'
+import { WebCPlayer } from './WebCPlayer'
 import { Toucher } from './Toucher'
+import { Player } from './Player';
+import { MsePlayer } from './MsePlayer';
 
 
 
-const canvas = ref<HTMLCanvasElement|null>(null)
-const canvasStyle = reactive({
+const dispView = ref<HTMLElement|null>(null)
+const dispViewStyle = reactive({
     opacity: 1,
     width: 'auto',
     height: '600px',
@@ -29,7 +32,8 @@ const canvasStyle = reactive({
 
 const props = defineProps<{
     atxAgentPort: number,
-    isEnable: boolean
+    isEnable: boolean,
+    way: string,  //mse or webc
 }>()
 
 let comm: Communicator
@@ -42,8 +46,15 @@ onMounted(() => {
     
     const wsUrl = `ws://${window.location.hostname}:${props.atxAgentPort}/scrcpy`
     comm = new Communicator(wsUrl)
-    player = new Player(canvas.value!, comm)
-    toucher = new Toucher(canvas.value!, comm)
+    toucher = new Toucher(dispView.value!, comm)
+
+    if (props.way === 'mse') {
+        player = new MsePlayer((dispView.value as HTMLVideoElement)!, comm)
+    }
+    else if (props.way === 'webc') {
+        player = new WebCPlayer((dispView.value as HTMLCanvasElement)!, comm)
+    }
+
 
     player.init()
     toucher.init()
@@ -60,18 +71,18 @@ onMounted(() => {
 watch(() => props.isEnable, (newVal) => {
     if (newVal) {
         comm.start()
-        canvasStyle.opacity = 1
+        dispViewStyle.opacity = 1
     } else {
         comm.stop()
-        canvasStyle.opacity = 0.5
+        dispViewStyle.opacity = 0.5
     }
 })
 
 
 function fitCanvas() {
-    if (canvas.value !== null) {
-        canvasStyle.height = canvas.value!!.parentElement?.clientHeight + 'px'
-        canvasStyle.width = 'auto'
+    if (dispView.value !== null) {
+        dispViewStyle.height = dispView.value!!.parentElement?.clientHeight + 'px'
+        dispViewStyle.width = 'auto'
     }
 }
 

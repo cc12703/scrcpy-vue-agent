@@ -2,7 +2,7 @@
 
 <template>
   <div class="dev-view">
-    <device-screen :is-enable="isOn" :atx-agent-port="7912"></device-screen>
+    <device-screen :is-enable="isOn" :atx-agent-port="7912" way="mse"></device-screen>
   </div>
   <button type="button" @click="isOn = !isOn">{{ isOn? "关闭" : "打开" }}</button>
 </template>
