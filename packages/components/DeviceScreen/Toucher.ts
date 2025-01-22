@@ -29,13 +29,42 @@ export class Toucher {
 
     public init() {
         this.dispView.addEventListener('mousedown', this.onMouseDown)
+        this.dispView.addEventListener('touchstart', this.onTouchStart)
+    }
+
+    private onTouchStart = (event: TouchEvent) => {
+        event.preventDefault()
+
+        this.calcRects()
+        this.sendTouchMsgOfTouch(TOUCH_MSG_OPER_DOWN, event, 0)
+
+        this.dispView.addEventListener('touchmove', this.onTouchMove)
+        this.dispView.addEventListener('touchend', this.onTouchEnd)
+        this.dispView.addEventListener('touchcancel', this.onTouchEnd)
+    }
+
+
+    private onTouchMove = (event: TouchEvent) => {
+        event.preventDefault()
+
+        this.sendTouchMsgOfTouch(TOUCH_MSG_OPER_MOVE, event, 1)
+    }
+
+    private onTouchEnd = (event: TouchEvent) => {
+        event.preventDefault()
+
+        this.sendTouchMsgOfTouch(TOUCH_MSG_OPER_UP, event, 0)
+
+        this.dispView.removeEventListener('touchmove', this.onTouchMove)
+        this.dispView.removeEventListener('touchend', this.onTouchEnd)
+        this.dispView.removeEventListener('touchcancel', this.onTouchEnd)
     }
 
     private onMouseDown = (event: MouseEvent) => {
         event.preventDefault()
 
         this.calcRects()
-        this.sendTouchMsg(TOUCH_MSG_OPER_DOWN, event, 0)
+        this.sendTouchMsgOfMouse(TOUCH_MSG_OPER_DOWN, event, 0)
 
 
         this.dispView.addEventListener('mousemove', this.onMouseMove)
@@ -49,7 +78,7 @@ export class Toucher {
 
         event.preventDefault()
 
-        this.sendTouchMsg(TOUCH_MSG_OPER_MOVE, event, 1)
+        this.sendTouchMsgOfMouse(TOUCH_MSG_OPER_MOVE, event, 1)
     }
 
     private onMouseUp = (event: MouseEvent) => {
@@ -59,7 +88,7 @@ export class Toucher {
 
         event.preventDefault()
 
-        this.sendTouchMsg(TOUCH_MSG_OPER_UP, event, 0)
+        this.sendTouchMsgOfMouse(TOUCH_MSG_OPER_UP, event, 0)
 
         this.dispView.removeEventListener('mousemove', this.onMouseMove)
         document.removeEventListener('mouseup', this.onMouseUp)
@@ -70,7 +99,7 @@ export class Toucher {
   
 
 
-    private sendTouchMsg(oper: string, event: MouseEvent, pressure: number) {
+    private sendTouchMsgOfMouse(oper: string, event: MouseEvent, pressure: number) {
         const x = Math.round((event.pageX - this.scrnRect.x) / this.scrnRect.w * this.dispViewRect.w)
         const y = Math.round((event.pageY - this.scrnRect.y) / this.scrnRect.h * this.dispViewRect.h)
         const msg = new TouchMessage(oper, 0, x, y,
@@ -78,6 +107,14 @@ export class Toucher {
         this.comm.sendMsg(msg)
     }
 
+
+    private sendTouchMsgOfTouch(oper: string, event: TouchEvent, pressure: number) {
+        const x = Math.round((event.touches[0].pageX - this.scrnRect.x) / this.scrnRect.w * this.dispViewRect.w)
+        const y = Math.round((event.touches[0].pageY - this.scrnRect.y) / this.scrnRect.h * this.dispViewRect.h)
+        const msg = new TouchMessage(oper, 0, x, y,
+                    this.dispViewRect.w, this.dispViewRect.h, pressure)
+        this.comm.sendMsg(msg)
+    }
 
 
 
